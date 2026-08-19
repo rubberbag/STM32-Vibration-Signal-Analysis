@@ -55,6 +55,7 @@ static int test_invalid_rpm(void)
 }
 
 
+
 static int test_invalid_sample_rate(void)
 {
     struct VibrationConfig config =
