@@ -1,0 +1,26 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build tests
+        run: |
+          gcc tests/machine/test_vibration.c \
+              src/machine/vibration.c \
+              -Iinclude \
+              -Iinc \
+              -lm \
+              -Wall \
+              -Wextra \
+              -o test_vibration
+
+      - name: Run tests
+        run: ./test_vibration
