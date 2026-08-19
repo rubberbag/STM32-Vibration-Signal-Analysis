@@ -4,13 +4,37 @@
 #include "vibration.h"
 
 
-
-
+/**
+ * vibration_validate - Validate vibration configuration
+ * @config: Vibration generator configuration
+ *
+ * Return: VIBRATION_OK if valid, otherwise the appropriate error status
+ */
 static VibrationStatus vibration_validate(const struct VibrationConfig *config);
+
+
+/**
+ * vibration - Generate a vibration sample
+ * @config: Vibration generator configuration
+ * @n: Sample index
+ *
+ * Return: Generated vibration value.
+ */
 static double vibration(const struct VibrationConfig *config, uint16_t n);
 
 
 
+/**
+ * vibration_fixed - Generate a fixed-point vibration sample
+ * @config: Vibration generator configuration
+ * @n: Sample index
+ * @fixed_point: Pointer to store the generated sample
+ *
+ * Generates one vibration sample and converts it to fixed-point
+ * representation scaled by 100.
+ *
+ * Return: VIBRATION_OK on success, otherwise an error status
+ */
 VibrationStatus vibration_fixed(const struct VibrationConfig *config, uint16_t n, int16_t *fixed_point)
 {
     if (config == NULL || fixed_point == NULL)
