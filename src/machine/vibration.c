@@ -5,83 +5,67 @@
 
 
 /**
- * vibration_validate - Validate vibration configuration
- * @config: Vibration generator configuration
+ * vibration_validate - Validate vibration generatoruration
+ * @generator: Vibration generator generatoruration
  *
  * Return: VIBRATION_OK if valid, otherwise the appropriate error status
  */
-static VibrationStatus vibration_validate(const struct VibrationConfig *config);
-
-
-/**
- * vibration - Generate a vibration sample
- * @config: Vibration generator configuration
- * @n: Sample index
- *
- * Return: Generated vibration value.
- */
-static double vibration(const struct VibrationConfig *config, uint16_t n);
+static VibrationStatus vibration_validate(const struct VibrationGenerator *generator);
 
 
 
-/**
- * vibration_fixed - Generate a fixed-point vibration sample
- * @config: Vibration generator configuration
- * @n: Sample index
- * @fixed_point: Pointer to store the generated sample
- *
- * Generates one vibration sample and converts it to fixed-point
- * representation scaled by 100.
- *
- * Return: VIBRATION_OK on success, otherwise an error status
- */
-VibrationStatus vibration_fixed(const struct VibrationConfig *config, uint16_t n, int16_t *fixed_point)
+VibrationStatus generator_init(
+    struct VibrationGenerator *generator)
 {
-    if (config == NULL || fixed_point == NULL)
-    return VIBRATION_INVALID_CONFIG;
+    if (generator == NULL)
+        return VIBRATION_INVALID_CONFIG;
 
-    VibrationStatus status = vibration_validate(config);
+    VibrationStatus status = vibration_validate(generator);
 
-    if(status != VIBRATION_OK)
+    if (status != VIBRATION_OK)
         return status;
 
+    double frequency = generator->rpm / 60.0;
 
-    double vibration_t = vibration(config, n);
-
-    *fixed_point = (int16_t) lround(vibration_t * 100);
+    generator->phase = 0.0;
+    generator->phase_step =
+        2.0 * VIBRATION_PI *
+        frequency /
+        generator->sample_rate;
 
     return VIBRATION_OK;
 }
 
 
-static VibrationStatus vibration_validate(const struct VibrationConfig *config)
+
+static VibrationStatus vibration_validate(const struct VibrationGenerator *generator)
 {
     
-    if (config->rpm <= 0.0)
+    if (generator->rpm <= 0.0)
         return VIBRATION_INVALID_RPM;
 
-    double frequency = config->rpm / 60.0;
+    double frequency = generator->rpm / 60.0;
 
 
-    if (config->sample_rate <= 0.0)
+    if (generator->sample_rate <= 0.0)
         return VIBRATION_INVALID_SAMPLE_RATE;
 
     double nyquist =
-        config->sample_rate / 2.0;
+        generator->sample_rate / 2.0;
 
     if (frequency >= nyquist)
         return VIBRATION_NYQUIST_VIOLATION;
 
 
-    if (config->harmonics_enabled)
+    if (generator->harmonics_enabled)
     {
-        if (config->harmonic_count == 0)
+        if (generator->harmonic_count == 0)
         {
             return VIBRATION_INVALID_HARMONIC_COUNT;
         }
 
         double max_frequency =
-            frequency * config->harmonic_count;
+            frequency * generator->harmonic_count;
 
         if (max_frequency >= nyquist)
             return VIBRATION_NYQUIST_VIOLATION;
@@ -90,28 +74,29 @@ static VibrationStatus vibration_validate(const struct VibrationConfig *config)
     return VIBRATION_OK;
 }
 
-static double vibration(const struct VibrationConfig *config, uint16_t n)
+
+double vibration(struct VibrationGenerator *generator)
 {
 
-    double frequency = config->rpm/60.0;
-
-    double time = (double)n / config->sample_rate;
-
-    double vibration  = 0.00;
+    double value  = 0.00;
     
 
-    if (config->harmonics_enabled)
+    if (generator->harmonics_enabled)
     {
-        for(int i = 1;  i <= config->harmonic_count; i++)
+        for(int i = 1;  i <= generator->harmonic_count; i++)
         {
-            double harmonic_frequency = frequency* i;
-            double amplitude          = config->amplitude/i;
+            double amplitude = generator->amplitude/i;
 
-            vibration += amplitude * sin(2.0 * M_PI * harmonic_frequency * time );
+            value += amplitude * sin(generator->phase * i );
         }
     }
     else 
-        vibration += config->amplitude * sin(2.0 * M_PI * frequency * time );
+        value += generator->amplitude * sin(generator->phase);
 
-    return vibration;
+    generator->phase += generator->phase_step;
+
+    if(generator->phase >= 2.0 * VIBRATION_PI)
+        generator->phase -=2.0 * VIBRATION_PI;
+
+    return value;
 }
