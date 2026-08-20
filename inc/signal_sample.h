@@ -5,9 +5,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "vibration.h"
-#include "disturbaces.h"
-#include "faults.h"
+
 
 typedef enum
 {
@@ -39,6 +37,8 @@ struct SignalGenerator
     bool disturbance_enabled;
     bool fault_enabled;
 };
+
+SignalStatus signal_generator_init(struct SignalGenerator *signal);
 
 BufferStatus sample_generate(struct SignalGenerator *signal, int32_t *buffer, size_t size);
 
