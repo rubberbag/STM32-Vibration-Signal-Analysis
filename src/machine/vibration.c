@@ -2,6 +2,7 @@
 #include <stddef.h>
 
 #include "vibration.h"
+#include "common.h"
 
 
 /**
@@ -29,7 +30,7 @@ VibrationStatus generator_init(
 
     generator->phase = 0.0;
     generator->phase_step =
-        2.0 * VIBRATION_PI *
+        2.0 * PI *
         frequency /
         generator->sample_rate;
 
@@ -95,8 +96,8 @@ double vibration(struct VibrationGenerator *generator)
 
     generator->phase += generator->phase_step;
 
-    if(generator->phase >= 2.0 * VIBRATION_PI)
-        generator->phase -=2.0 * VIBRATION_PI;
+    if(generator->phase >= 2.0 * PI)
+        generator->phase -=2.0 * PI;
 
     return value;
 }

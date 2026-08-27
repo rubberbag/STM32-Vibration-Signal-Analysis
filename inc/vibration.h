@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define VIBRATION_PI 3.14159265358979323846
-
 /**
  * enum VibrationStatus - Vibration generator status codes
  * @VIBRATION_OK: Operation completed successfully

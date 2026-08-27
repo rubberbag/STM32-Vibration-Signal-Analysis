@@ -1,6 +1,10 @@
 #include <math.h>
 
-#include "signal.h"
+#include "vibration.h"
+#include "disturbaces.h"
+#include "faults.h"
+
+#include "signal_sample.h"
 
 
 SignalStatus signal_generator_init(

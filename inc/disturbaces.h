@@ -2,6 +2,7 @@
 #define DISTURBANCE_H
 
 #include <stdbool.h>
+#include  "noise.h"
 
 typedef enum
 {
