@@ -5,6 +5,7 @@ struct DriftGenerator
 {
     double sigma;
     double value;
+    double dt;
 };
 
 typedef enum
@@ -15,7 +16,7 @@ typedef enum
 
 } DriftStatus;
 
-DriftStatus drift_init(struct DriftGenerator *drift, double sigma );
+DriftStatus drift_init(struct DriftGenerator *drift, const double sigma, struct VibrationGenerator *generator );
 double generate_drift(struct DriftGenerator *drift);
 
 #endif
