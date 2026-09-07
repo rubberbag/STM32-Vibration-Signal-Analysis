@@ -3,9 +3,9 @@
 
 
 #include <stdint.h>
-#include <stdbool.h>
 
 #include "oscillator.h"
+
 
 typedef enum
 {
@@ -15,6 +15,7 @@ typedef enum
     ELECTRICAL_INVALID_FREQUENCY,
     ELECTRICAL_NYQUIST_VIOLATION,
     ELECTRICAL_INVALID_HARMONIC_COUNT,
+    ELECTRICAL_HARMONICS_CLAMPED,
     ELECTRICAL_INVALID_CONFIG,
 } ElectricStatus;
 
@@ -25,9 +26,7 @@ struct ElectricGenerator
     double amplitude;
     double frequency;
 
-    uint8_t harmonic_count;
-    bool harmonics_enabled;
-
+    struct HarmonicProfile harmonics;
     struct Oscillator oscillator;
 };
 

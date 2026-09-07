@@ -21,7 +21,7 @@ typedef enum
     VIBRATION_INVALID_SAMPLE_RATE,
     VIBRATION_NYQUIST_VIOLATION,
     VIBRATION_INVALID_RPM,
-    VIBRATION_INVALID_HARMONIC_COUNT,
+    VIBRATION_HARMONICS_CLAMPED,
     VIBRATION_INVALID_CONFIG,
 } VibrationStatus;
 
@@ -32,9 +32,7 @@ struct VibrationGenerator
     double rpm;
     double amplitude;
 
-    uint8_t harmonic_count;
-    bool harmonics_enabled;
-
+    struct HarmonicProfile harmonics;
     struct Oscillator oscillator;
 };
 

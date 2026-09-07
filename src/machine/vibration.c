@@ -12,7 +12,7 @@
  *
  * Return: VIBRATION_OK if valid, otherwise the appropriate error status
  */
-static VibrationStatus vibration_validate(const struct VibrationGenerator *generator, const struct SignalConfig *config);
+static VibrationStatus vibration_validate(struct VibrationGenerator *generator, const struct SignalConfig *config);
 
 
 
@@ -36,7 +36,7 @@ VibrationStatus vibration_init(
 
 
 
-static VibrationStatus vibration_validate(const struct VibrationGenerator *generator, const struct SignalConfig *config)
+static VibrationStatus vibration_validate(struct VibrationGenerator *generator, const struct SignalConfig *config)
 {
     
     if (generator->rpm <= 0.0)
@@ -55,21 +55,31 @@ static VibrationStatus vibration_validate(const struct VibrationGenerator *gener
         return VIBRATION_NYQUIST_VIOLATION;
 
 
-    if (generator->harmonics_enabled)
+    VibrationStatus status = VIBRATION_OK;
+
+    if (generator->harmonics.count > MAX_HARMONICS)
     {
-        if (generator->harmonic_count == 0)
-        {
-            return VIBRATION_INVALID_HARMONIC_COUNT;
-        }
+        generator->harmonics.count = MAX_HARMONICS;
+
+        /*
+         * Harmonic count exceeded the supported maximum.
+         * Configuration was clamped to MAX_HARMONICS.
+         */
+        status = VIBRATION_HARMONICS_CLAMPED;
+    }
+
+    if (generator->harmonics.count > 0)
+    {
 
         double max_frequency =
-            frequency * generator->harmonic_count;
+            frequency * generator->harmonics.count;
 
         if (max_frequency >= nyquist)
             return VIBRATION_NYQUIST_VIOLATION;
     }
 
-    return VIBRATION_OK;
+
+    return status;
 }
 
 
@@ -79,9 +89,9 @@ double vibration(struct VibrationGenerator *generator)
     double value  = 0.00;
     
 
-    if (generator->harmonics_enabled)
+    if (generator->harmonics.count)
     {
-        for(int i = 1;  i <= generator->harmonic_count; i++)
+        for(int i = 1;  i <= generator->harmonics.count; i++)
         {
             double amplitude = generator->amplitude/i;
 

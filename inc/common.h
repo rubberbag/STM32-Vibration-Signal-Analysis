@@ -3,10 +3,17 @@
 
 
 #define PI 3.14159265358979323846
+#define MAX_HARMONICS 16
 
 struct SignalConfig
 {
     double sample_rate;
+};
+
+struct HarmonicProfile
+{
+    double amplitude[MAX_HARMONICS];
+    uint8_t count;
 };
 
 
