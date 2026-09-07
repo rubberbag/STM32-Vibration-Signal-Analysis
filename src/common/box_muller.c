@@ -1,7 +1,9 @@
 #include <stdint.h>
+#include <math.h>
 
 #include "stm32f4xx.h"
 #include "common.h"
+
 
 #define RNG_UINT32_MAX 4294967295.0
 

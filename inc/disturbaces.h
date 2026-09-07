@@ -2,7 +2,10 @@
 #define DISTURBANCE_H
 
 #include <stdbool.h>
+
 #include  "noise.h"
+#include "drift.h"
+#include "electric_interference.h"
 
 typedef enum
 {
@@ -14,7 +17,7 @@ struct DisturbanceGenerator
 {
     struct NoiseGenerator noise;
     struct DriftGenerator drift;
-    struct ElectricalGenerator electrical;
+    struct ElectricGenerator electric;
 
     bool noise_enabled;
     bool drift_enabled;

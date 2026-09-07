@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "oscillator.h"
+
 
 /**
  * enum VibrationStatus - Vibration generator status codes
@@ -28,18 +30,16 @@ typedef enum
 struct VibrationGenerator
 {
     double rpm;
-    double sample_rate;
     double amplitude;
 
     uint8_t harmonic_count;
     bool harmonics_enabled;
-    
-    double phase;
-    double phase_step;
+
+    struct Oscillator oscillator;
 };
 
 
-VibrationStatus generate_init(struct VibrationGenerator *generator);
+VibrationStatus vibration_init(struct VibrationGenerator *generator, const struct SignalConfig *config);
 
 double vibration(struct VibrationGenerator *generator);
 

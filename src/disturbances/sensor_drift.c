@@ -12,13 +12,13 @@
  * 
  * Return: DRIFT_OK on success, DRIFT_INAVLID_PARAMETERS if drift is NULL or sigmal is not finite *         or positive 
 */
-DriftStatus drift_init(struct DriftGenerator *drift, const double sigma, struct VibrationGenerator *generator )
+DriftStatus drift_init(struct DriftGenerator *drift, const double sigma, struct SignalConfig *config )
 {
-    if(drift == NULL || generator || !isfinite(sigma) || sigma <= 0.0) return DRIFT_INVALID_PARAMETERS;
+    if(drift == NULL || config || !isfinite(sigma) || sigma <= 0.0) return DRIFT_INVALID_PARAMETERS;
 
     drift->sigma = sigma;
     drift->value = 0.0;
-    drift->dt    = 1.0/ generator->sample_rate;
+    drift->dt    = 1.0/ config->sample_rate;
 
     return DRIFT_OK;
 

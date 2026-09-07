@@ -1,8 +1,9 @@
 #include <math.h>
 #include <stddef.h>
 
-#include "vibration.h"
 #include "common.h"
+#include "vibration.h"
+
 
 
 /**
@@ -11,35 +12,31 @@
  *
  * Return: VIBRATION_OK if valid, otherwise the appropriate error status
  */
-static VibrationStatus vibration_validate(const struct VibrationGenerator *generator);
+static VibrationStatus vibration_validate(const struct VibrationGenerator *generator, const struct SignalConfig *config);
 
 
 
-VibrationStatus generator_init(
-    struct VibrationGenerator *generator)
+VibrationStatus vibration_init(
+    struct VibrationGenerator *generator, const struct SignalConfig *config)
 {
-    if (generator == NULL)
+    if (generator == NULL || config == NULL)
         return VIBRATION_INVALID_CONFIG;
 
-    VibrationStatus status = vibration_validate(generator);
+    VibrationStatus status = vibration_validate(generator, config);
 
     if (status != VIBRATION_OK)
         return status;
 
     double frequency = generator->rpm / 60.0;
 
-    generator->phase = 0.0;
-    generator->phase_step =
-        2.0 * PI *
-        frequency /
-        generator->sample_rate;
+    oscillator_init(&generator->oscillator, frequency, config->sample_rate);
 
     return VIBRATION_OK;
 }
 
 
 
-static VibrationStatus vibration_validate(const struct VibrationGenerator *generator)
+static VibrationStatus vibration_validate(const struct VibrationGenerator *generator, const struct SignalConfig *config)
 {
     
     if (generator->rpm <= 0.0)
@@ -48,11 +45,11 @@ static VibrationStatus vibration_validate(const struct VibrationGenerator *gener
     double frequency = generator->rpm / 60.0;
 
 
-    if (generator->sample_rate <= 0.0)
+    if (config->sample_rate <= 0.0)
         return VIBRATION_INVALID_SAMPLE_RATE;
 
     double nyquist =
-        generator->sample_rate / 2.0;
+        config->sample_rate / 2.0;
 
     if (frequency >= nyquist)
         return VIBRATION_NYQUIST_VIOLATION;
@@ -88,16 +85,13 @@ double vibration(struct VibrationGenerator *generator)
         {
             double amplitude = generator->amplitude/i;
 
-            value += amplitude * sin(generator->phase * i );
+            value += amplitude * sin(generator->oscillator.phase * i );
         }
     }
     else 
-        value += generator->amplitude * sin(generator->phase);
+        value += generator->amplitude * sin(generator->oscillator.phase);
 
-    generator->phase += generator->phase_step;
-
-    if(generator->phase >= 2.0 * PI)
-        generator->phase -=2.0 * PI;
+    oscillator_next(&generator->oscillator);
 
     return value;
 }
