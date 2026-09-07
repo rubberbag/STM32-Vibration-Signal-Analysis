@@ -24,8 +24,10 @@ VibrationStatus vibration_init(
 
     VibrationStatus status = vibration_validate(generator, config);
 
-    if (status != VIBRATION_OK)
+    if (status != VIBRATION_OK && status != VIBRATION_HARMONICS_CLAMPED)
+    {
         return status;
+    }
 
     double frequency = generator->rpm / 60.0;
 
@@ -36,50 +38,49 @@ VibrationStatus vibration_init(
 
 
 
-static VibrationStatus vibration_validate(struct VibrationGenerator *generator, const struct SignalConfig *config)
+static VibrationStatus vibration_validate(
+    struct VibrationGenerator *generator,
+    const struct SignalConfig *config)
 {
-    
+    if (generator == NULL || config == NULL)
+        return VIBRATION_INVALID_CONFIG;
+
     if (generator->rpm <= 0.0)
         return VIBRATION_INVALID_RPM;
 
-    double frequency = generator->rpm / 60.0;
+    SignalValidationStatus status;
 
+    status = validate_sample_rate(config->sample_rate);
 
-    if (config->sample_rate <= 0.0)
+    if (status != SIGNAL_VALID)
         return VIBRATION_INVALID_SAMPLE_RATE;
 
-    double nyquist =
-        config->sample_rate / 2.0;
+    double frequency = generator->rpm / 60.0;
 
-    if (frequency >= nyquist)
+    status = validate_frequency(
+        frequency,
+        config->sample_rate
+    );
+
+    if (status == SIGNAL_INVALID_FREQUENCY)
+        return VIBRATION_INVALID_RPM;
+
+    if (status == SIGNAL_NYQUIST_VIOLATION)
         return VIBRATION_NYQUIST_VIOLATION;
 
+    status = validate_harmonics(
+        frequency,
+        config->sample_rate,
+        &generator->harmonics
+    );
 
-    VibrationStatus status = VIBRATION_OK;
+    if (status == SIGNAL_HARMONICS_CLAMPED)
+        return VIBRATION_HARMONICS_CLAMPED;
 
-    if (generator->harmonics.count > MAX_HARMONICS)
-    {
-        generator->harmonics.count = MAX_HARMONICS;
+    if (status == SIGNAL_NYQUIST_VIOLATION)
+        return VIBRATION_NYQUIST_VIOLATION;
 
-        /*
-         * Harmonic count exceeded the supported maximum.
-         * Configuration was clamped to MAX_HARMONICS.
-         */
-        status = VIBRATION_HARMONICS_CLAMPED;
-    }
-
-    if (generator->harmonics.count > 0)
-    {
-
-        double max_frequency =
-            frequency * generator->harmonics.count;
-
-        if (max_frequency >= nyquist)
-            return VIBRATION_NYQUIST_VIOLATION;
-    }
-
-
-    return status;
+    return VIBRATION_OK;
 }
 
 
@@ -91,11 +92,10 @@ double vibration(struct VibrationGenerator *generator)
 
     if (generator->harmonics.count)
     {
-        for(int i = 1;  i <= generator->harmonics.count; i++)
+        for (int i = 0; i < generator->harmonics.count; i++)
         {
-            double amplitude = generator->amplitude/i;
-
-            value += amplitude * sin(generator->oscillator.phase * i );
+            value += generator->harmonics.amplitude[i] *
+                     sin(generator->oscillator.phase * (i + 1));
         }
     }
     else 

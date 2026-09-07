@@ -25,8 +25,10 @@ ElectricStatus electric_interference_init(
 
     ElectricStatus status = electric_interference_validate(generator, config);
 
-    if (status != ELECTRICAL_OK)
+   if (status != ELECTRICAL_OK && status != ELECTRICAL_HARMONICS_CLAMPED)
+    {
         return status;
+    }
 
     oscillator_init(&generator->oscillator, generator->frequency, config->sample_rate);
 
@@ -35,54 +37,46 @@ ElectricStatus electric_interference_init(
 
 
 
-static ElectricStatus electric_interference_validate(struct ElectricGenerator *generator, const struct SignalConfig *config)
+static ElectricStatus electric_interference_validate(
+    struct ElectricGenerator *generator,
+    const struct SignalConfig *config)
 {
-    
     if (generator == NULL || config == NULL)
-        return ELECTRICAL_INVALID_PARAMETER;
-
-
-    if (config->sample_rate <= 0.0)
-        return ELECTRICAL_INVALID_SAMPLE_RATE;
-
-    double nyquist =
-        config->sample_rate / 2.0;
-
-
+        return ELECTRICAL_INVALID_CONFIG;
 
     if (generator->frequency <= 0.0)
         return ELECTRICAL_INVALID_FREQUENCY;
 
+    SignalValidationStatus status;
 
-    if (generator->frequency >= nyquist)
+    status = validate_sample_rate(config->sample_rate);
+
+    if (status != SIGNAL_VALID)
+        return ELECTRICAL_INVALID_SAMPLE_RATE;
+
+    status = validate_frequency(
+        generator->frequency,
+        config->sample_rate
+    );
+
+    if (status == SIGNAL_NYQUIST_VIOLATION)
         return ELECTRICAL_NYQUIST_VIOLATION;
 
+    status = validate_harmonics(
+        generator->frequency,
+        config->sample_rate,
+        &generator->harmonics
+    );
 
-    ElectricStatus status = ELECTRICAL_OK;
+    if (status == SIGNAL_HARMONICS_CLAMPED)
+        return ELECTRICAL_HARMONICS_CLAMPED;
 
-    if (generator->harmonics.count > MAX_HARMONICS)
-    {
-        generator->harmonics.count = MAX_HARMONICS;
+    if (status == SIGNAL_NYQUIST_VIOLATION)
+        return ELECTRICAL_NYQUIST_VIOLATION;
 
-        /*
-         * Harmonic count exceeded the supported maximum.
-         * Configuration was clamped to MAX_HARMONICS.
-         */
-        status = ELECTRICAL_HARMONICS_CLAMPED;
-    }
-
-    if (generator->harmonics.count > 0)
-    {
-        double max_frequency =
-            generator->frequency * generator->harmonics.count;
-
-        if (max_frequency >= nyquist)
-            return ELECTRICAL_NYQUIST_VIOLATION;
-    }
-
-
-    return status;
+    return ELECTRICAL_OK;
 }
+
 
 
 double electric_interference(struct ElectricGenerator *generator)
