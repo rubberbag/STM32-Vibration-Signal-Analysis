@@ -2,7 +2,7 @@
 #define COMMON_H
 
 
-#define PI 3.14159265358979323846
+#define PI 3.14159265358979323846f
 #define MAX_HARMONICS 16
 
 typedef enum
@@ -17,33 +17,33 @@ typedef enum
 
 
 SignalValidationStatus validate_sample_rate(
-    double sample_rate
+    float sample_rate
 );
 
 SignalValidationStatus validate_frequency(
-    double frequency,
-    double sample_rate
+    float frequency,
+    float sample_rate
 );
 
 SignalValidationStatus validate_harmonics(
-    double frequency,
-    double sample_rate,
+    float frequency,
+    float sample_rate,
     struct HarmonicProfile *harmonics
 );
 
 struct HarmonicProfile
 {
-    double amplitude[MAX_HARMONICS];
+    float amplitude[MAX_HARMONICS];
     uint8_t count;
 };
 
 
 struct SignalConfig
 {
-    double sample_rate;
+    float sample_rate;
 };
 
 void RNG_Init(void);
-double box_muller(void);
+float box_muller(void);
 
 #endif

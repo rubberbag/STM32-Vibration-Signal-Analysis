@@ -27,7 +27,7 @@ struct DisturbanceGenerator
 DisturbanceStatus disturbance_init(
     struct DisturbanceGenerator *generator);
 
-double disturbance_generate(
+float disturbance_generate(
     struct DisturbanceGenerator *generator);
 
 #endif

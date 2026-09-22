@@ -1,7 +1,6 @@
 #include <math.h>
 #include <stddef.h>
 
-#include "common.h"
 #include "vibration.h"
 
 
@@ -29,7 +28,7 @@ VibrationStatus vibration_init(
         return status;
     }
 
-    double frequency = generator->rpm / 60.0;
+    float frequency = generator->rpm / 60.0f;
 
     oscillator_init(&generator->oscillator, frequency, config->sample_rate);
 
@@ -45,7 +44,7 @@ static VibrationStatus vibration_validate(
     if (generator == NULL || config == NULL)
         return VIBRATION_INVALID_CONFIG;
 
-    if (generator->rpm <= 0.0)
+    if (generator->rpm <= 0.0f)
         return VIBRATION_INVALID_RPM;
 
     SignalValidationStatus status;
@@ -55,7 +54,7 @@ static VibrationStatus vibration_validate(
     if (status != SIGNAL_VALID)
         return VIBRATION_INVALID_SAMPLE_RATE;
 
-    double frequency = generator->rpm / 60.0;
+    float frequency = generator->rpm / 60.0f;
 
     status = validate_frequency(
         frequency,
@@ -84,10 +83,10 @@ static VibrationStatus vibration_validate(
 }
 
 
-double vibration(struct VibrationGenerator *generator)
+float vibration(struct VibrationGenerator *generator)
 {
 
-    double value  = 0.00;
+    float value  = 0.0f;
     
 
     if (generator->harmonics.count)

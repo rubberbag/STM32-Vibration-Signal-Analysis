@@ -7,7 +7,7 @@
 #include "common.h"
 
 
-#define MEAN           0.0
+#define MEAN           0.0f
 
 
 /*
@@ -47,10 +47,10 @@ static NoiseStatus noise_validation(
     if (generator == NULL || noise == NULL)
         return NOISE_INVALID_PARAMETERS;
 
-    if (generator->amplitude <= 0.0)
+    if (generator->amplitude <= 0.0f)
         return NOISE_INVALID_AMPLITUDE;
 
-    if (noise->snr_db < 0.0)
+    if (noise->snr_db < 0.0f)
         return NOISE_INVALID_SNR;
 
     return NOISE_OK;
@@ -68,17 +68,17 @@ static NoiseStatus NoisePowerInit(
         return status;
 
     /* Convert peak amplitude to RMS amplitude. */
-    double signal_rms = generator->amplitude / sqrt(2.0);
+    float signal_rms = generator->amplitude / sqrtf(2.0f);
 
     /* Signal power. */
-    double signal_power = signal_rms * signal_rms;
+    float signal_power = signal_rms * signal_rms;
 
     /* Noise power from the requested SNR. */
     noise->noise_power =
-        signal_power / pow(10.0, noise->snr_db / 10.0);
+        signal_power / powf(10.0f, noise->snr_db / 10.0f);
 
     /* For zero-mean Gaussian noise: variance = sigma^2 = noise power. */
-    noise->sigma = sqrt(noise->noise_power);
+    noise->sigma = sqrtf(noise->noise_power);
 
     return NOISE_OK;
 }
@@ -89,10 +89,10 @@ static NoiseStatus NoisePowerInit(
  *
  *     n ~ N(0, sigma^2)
  */
-double generate_noise(const struct NoiseGenerator *noise)
+float generate_noise(const struct NoiseGenerator *noise)
 {
     if (noise == NULL)
-        return 0.0;
+        return 0.0f;
 
     return MEAN + (noise->sigma * box_muller());
 }

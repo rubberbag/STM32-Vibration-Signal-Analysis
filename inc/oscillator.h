@@ -3,8 +3,8 @@
 
 struct Oscillator
 {
-    double phase;
-    double phase_step;
+    float phase;
+    float phase_step;
 };
 
 typedef enum 
@@ -13,7 +13,7 @@ typedef enum
     OSCILLATOR_INVALID_PARAMETERS,
 }OscillatorStatus;
 
-OscillatorStatus oscillator_init(struct Oscillator *oscillator, double frequency, double sample_rate);
+OscillatorStatus oscillator_init(struct Oscillator *oscillator, float frequency, float sample_rate);
 
 OscillatorStatus oscillator_next(struct Oscillator *oscillator);
 

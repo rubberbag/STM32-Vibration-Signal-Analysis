@@ -17,7 +17,7 @@ struct FaultGenerator
 FaultStatus fault_init(
     struct FaultGenerator *generator);
 
-double fault_generate(
+float fault_generate(
     struct FaultGenerator *generator);
 
 #endif

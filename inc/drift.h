@@ -3,9 +3,9 @@
 
 struct DriftGenerator
 {
-    double sigma;
-    double value;
-    double dt;
+    float sigma;
+    float value;
+    float dt;
 };
 
 typedef enum
@@ -16,7 +16,7 @@ typedef enum
 
 } DriftStatus;
 
-DriftStatus drift_init(struct DriftGenerator *drift, const double sigma, struct SignalConfig *config);
-double generate_drift(struct DriftGenerator *drift);
+DriftStatus drift_init(struct DriftGenerator *drift, const float sigma, struct SignalConfig *config);
+float generate_drift(struct DriftGenerator *drift);
 
 #endif

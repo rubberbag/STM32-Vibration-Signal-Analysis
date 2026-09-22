@@ -23,8 +23,8 @@ typedef enum
 
 struct ElectricGenerator
 {
-    double amplitude;
-    double frequency;
+    float amplitude;
+    float frequency;
 
     struct HarmonicProfile harmonics;
     struct Oscillator oscillator;
@@ -33,6 +33,6 @@ struct ElectricGenerator
 
 ElectricStatus electric_interference_init(struct ElectricGenerator *generator, const struct SignalConfig *config);
 
-double electric_interference(struct ElectricGenerator *generator);
+float electric_interference(struct ElectricGenerator *generator);
 
 #endif

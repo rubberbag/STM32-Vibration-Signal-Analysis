@@ -5,7 +5,7 @@
 #include "common.h"
 
 
-#define RNG_UINT32_MAX 4294967295.0
+#define RNG_UINT32_MAX 4294967295
 
 /* Initialize the STM32 hardware RNG. */
 void RNG_Init(void)
@@ -23,7 +23,7 @@ void RNG_Init(void)
  *
  *     z ~ N(0, 1)
  */
-double box_muller(void)
+float box_muller(void)
 {
     uint32_t r1;
     uint32_t r2;
@@ -43,19 +43,19 @@ double box_muller(void)
      * Convert uint32_t values to uniform random variables
      * in the interval (0, 1).
      */
-    double u1 =
-        ((double)r1 + 1.0) /
-        (RNG_UINT32_MAX + 2.0);
+    float u1 =
+        ((float)r1 + 1.0f) /
+        (RNG_UINT32_MAX + 2.0f);
 
-    double u2 =
-        ((double)r2 + 1.0) /
-        (RNG_UINT32_MAX + 2.0);
+    float u2 =
+        ((float)r2 + 1.0f) /
+        (RNG_UINT32_MAX + 2.0f);
 
     /*
      * Box-Muller transform:
      *
      * z = sqrt(-2 ln(u1)) cos(2 pi u2)
      */
-    return sqrt(-2.0 * log(u1)) *
-           cos(2.0 * PI * u2);
+    return sqrtf(-2.0f * logf(u1)) *
+           cosf(2.0f * PI * u2);
 }

@@ -3,9 +3,9 @@
 
 struct NoiseGenerator
 {
-    double snr_db;
-    double noise_power;
-    double sigma;
+    float snr_db;
+    float noise_power;
+    float sigma;
 };
 
 typedef enum
@@ -18,6 +18,6 @@ typedef enum
 } NoiseStatus;
 
 void RNG_Init(void);
-double generate_noise(const struct NoiseGenerator *noise);
+float generate_noise(const struct NoiseGenerator *noise);
 
 #endif

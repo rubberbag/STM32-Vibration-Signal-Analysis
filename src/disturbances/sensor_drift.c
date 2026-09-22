@@ -12,13 +12,13 @@
  * 
  * Return: DRIFT_OK on success, DRIFT_INAVLID_PARAMETERS if drift is NULL or sigmal is not finite *         or positive 
 */
-DriftStatus drift_init(struct DriftGenerator *drift, const double sigma, struct SignalConfig *config )
+DriftStatus drift_init(struct DriftGenerator *drift, const float sigma, struct SignalConfig *config )
 {
-    if(drift == NULL || config || !isfinite(sigma) || sigma <= 0.0) return DRIFT_INVALID_PARAMETERS;
+    if(drift == NULL || config || !isfinite(sigma) || sigma <= 0.0f) return DRIFT_INVALID_PARAMETERS;
 
     drift->sigma = sigma;
-    drift->value = 0.0;
-    drift->dt    = 1.0/ config->sample_rate;
+    drift->value = 0.0f;
+    drift->dt    = 1.0f/ config->sample_rate;
 
     return DRIFT_OK;
 
@@ -56,10 +56,10 @@ DriftStatus drift_init(struct DriftGenerator *drift, const double sigma, struct 
  *             chnage in the sensor bias per  smaple
  * 
 */
-double generate_drift(struct DriftGenerator *drift)
+float generate_drift(struct DriftGenerator *drift)
 {
     if (drift == NULL)
-        return 0.0;
+        return 0.0f;
 
-    return drift->value += drift->sigma * sqrt(drift->dt) * box_muller();
+    return drift->value += drift->sigma * sqrtf(drift->dt) * box_muller();
 }

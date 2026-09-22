@@ -44,7 +44,7 @@ static ElectricStatus electric_interference_validate(
     if (generator == NULL || config == NULL)
         return ELECTRICAL_INVALID_CONFIG;
 
-    if (generator->frequency <= 0.0)
+    if (generator->frequency <= 0)
         return ELECTRICAL_INVALID_FREQUENCY;
 
     SignalValidationStatus status;
@@ -79,22 +79,22 @@ static ElectricStatus electric_interference_validate(
 
 
 
-double electric_interference(struct ElectricGenerator *generator)
+float electric_interference(struct ElectricGenerator *generator)
 {
-    double value = 0.0;
+    float value = 0.0f;
 
     if (generator->harmonics.count > 0)
     {
         for (int i = 0; i < generator->harmonics.count; i++)
         {
             value += generator->harmonics.amplitude[i] *
-                     sin(generator->oscillator.phase * (i + 1));
+                     sinf(generator->oscillator.phase * (i + 1));
         }
     }
     else
     {
         value = generator->amplitude *
-                sin(generator->oscillator.phase);
+                sinf(generator->oscillator.phase);
     }
 
     oscillator_next(&generator->oscillator);

@@ -51,7 +51,7 @@ BufferStatus sample_generate(struct SignalGenerator *signal, int32_t *buffer, si
 
     for (size_t count = 0; count < size; count++)
     {
-        double value = 0.0;
+        float value = 0.0f;
 
         if(signal->vibration_enabled) 
             value += vibration(&signal->vibration);
@@ -62,7 +62,7 @@ BufferStatus sample_generate(struct SignalGenerator *signal, int32_t *buffer, si
         if(signal->disturbance_enabled) 
             value += disturbance(&signal->disturbance);
 
-        buffer[count] = (int32_t)lround(value * 100.0);
+        buffer[count] = (int32_t)lround(value * 100);
     }
 
     return BUFFER_STATUS_OK;

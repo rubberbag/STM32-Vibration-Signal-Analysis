@@ -4,14 +4,14 @@
 #include "common.h"
 
 
-OscillatorStatus oscillator_init(struct Oscillator *oscillator, double frequency, double sample_rate)
+OscillatorStatus oscillator_init(struct Oscillator *oscillator, float frequency, float sample_rate)
 {
-    if( oscillator == NULL || frequency <= 0 || sample_rate <=0)
+    if( oscillator == NULL || frequency <= 0.0f || sample_rate <=0.0f)
         return OSCILLATOR_INVALID_PARAMETERS;
 
-    oscillator->phase = 0.0;
+    oscillator->phase = 0.0f;
     oscillator->phase_step =
-        2.0 * PI *
+        2.0f * PI *
         frequency / sample_rate;
 
     return OSCILLATOR_OK;
@@ -26,8 +26,8 @@ OscillatorStatus oscillator_next(struct Oscillator *osc)
 
     osc->phase += osc->phase_step;
 
-    if(osc->phase >= 2.0 * PI)
-        osc->phase -=2.0 * PI;
+    if(osc->phase >= 2.0f * PI)
+        osc->phase -=2.0f * PI;
     
     return OSCILLATOR_OK;    
 };

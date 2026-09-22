@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "oscillator.h"
 
+#include "common.h"
 
 /**
  * enum VibrationStatus - Vibration generator status codes
@@ -29,8 +30,8 @@ typedef enum
 
 struct VibrationGenerator
 {
-    double rpm;
-    double amplitude;
+    float rpm;
+    float amplitude;
 
     struct HarmonicProfile harmonics;
     struct Oscillator oscillator;
@@ -39,6 +40,6 @@ struct VibrationGenerator
 
 VibrationStatus vibration_init(struct VibrationGenerator *generator, const struct SignalConfig *config);
 
-double vibration(struct VibrationGenerator *generator);
+float vibration(struct VibrationGenerator *generator);
 
 #endif
