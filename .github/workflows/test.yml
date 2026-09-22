@@ -13,14 +13,18 @@ jobs:
 
       - name: Build tests
         run: |
-          gcc tests/machine/test_vibration.c \
-              src/machine/vibration.c \
-              -Iinclude \
-              -Iinc \
-              -lm \
-              -Wall \
-              -Wextra \
-              -o test_vibration
+           gcc \
+                tests/machine/test_vibration.c \
+                src/machine/vibration.c \
+                src/common/signal_validation.c \
+                src/oscillator/oscillator.c \
+                -Iinclude \
+                -Iinc \
+                -lm \
+                -g \
+                -Wall \
+                -Wextra \
+                -o test_vibration
 
       - name: Run tests
         run: ./test_vibration
