@@ -1,22 +1,35 @@
 #include <stdio.h>
 #include "vibration.h"
+#include "oscillator.h"
 
 
 static int test_valid_configuration(void)
 {
-    struct VibrationConfig config =
+    struct SignalConfig config =
     {
-        .rpm = 1200,
-        .amplitude = 0.5,
-        .sample_rate = 2000,
-        .harmonic_count = 4,
-        .harmonics_enabled = true,
+        .sample_rate = 1000.0f
     };
 
-    int16_t value;
+    struct VibrationGenerator generator =
+    {
+        .rpm = 1200.0f,
+        .amplitude = 0.5f,
+
+        .harmonics = 
+        {
+            .amplitude = {1.0f, -10.0f, 5.4f, 2.3f},
+            .count = 4
+        },
+
+        .oscillator =
+        {
+            .phase = 0.0f,
+        }
+    };
+
 
     VibrationStatus status =
-        vibration_fixed(&config, 1, &value);
+        vibration_init(&generator, &config);
 
     if (status != VIBRATION_OK)
     {
@@ -30,19 +43,32 @@ static int test_valid_configuration(void)
 
 static int test_invalid_rpm(void)
 {
-    struct VibrationConfig config =
+
+    struct SignalConfig config =
     {
-        .rpm = 0,
-        .amplitude = 0.5,
-        .sample_rate = 2000,
-        .harmonic_count = 4,
-        .harmonics_enabled = true,
+        .sample_rate = 1000.0f
     };
 
-    int16_t value;
+    struct VibrationGenerator generator =
+    {
+        .rpm = 0.0f,
+        .amplitude = 0.5f,
+
+        .harmonics = 
+        {
+            .amplitude = {1.0f, -10.0f, 5.4f, 2.3f},
+            .count = 4
+        },
+        
+        .oscillator =
+        {
+            .phase = 0.0f,
+        }
+    };
+
 
     VibrationStatus status =
-        vibration_fixed(&config, 1, &value);
+        vibration_init(&generator, &config);
 
     if (status != VIBRATION_INVALID_RPM)
     {
@@ -58,19 +84,33 @@ static int test_invalid_rpm(void)
 
 static int test_invalid_sample_rate(void)
 {
-    struct VibrationConfig config =
+
+
+    struct SignalConfig config =
     {
-        .rpm = 1200,
-        .amplitude = 0.5,
-        .sample_rate = 0,
-        .harmonic_count = 4,
-        .harmonics_enabled = true,
+        .sample_rate = 0.0f
     };
 
-    int16_t value;
+    struct VibrationGenerator generator =
+    {
+        .rpm = 1000.0f,
+        .amplitude = 0.5f,
+
+        .harmonics = 
+        {
+            .amplitude = {1.0f, -10.0f, 5.4f, 2.3f},
+            .count = 4
+        },
+        
+        .oscillator =
+        {
+            .phase = 0.0f,
+        }
+    };
+
 
     VibrationStatus status =
-        vibration_fixed(&config, 1, &value);
+        vibration_init(&generator, &config);
 
     if (status != VIBRATION_INVALID_SAMPLE_RATE)
     {
@@ -85,19 +125,31 @@ static int test_invalid_sample_rate(void)
 
 static int test_nyquist_violation(void)
 {
-    struct VibrationConfig config =
+    struct SignalConfig config =
     {
-        .rpm = 1200,
-        .amplitude = 0.5,
-        .sample_rate = 100,
-        .harmonic_count = 4,
-        .harmonics_enabled = true,
+        .sample_rate = 1000.0f
     };
 
-    int16_t value;
+    struct VibrationGenerator generator =
+    {
+        .rpm = 8000.0f,
+        .amplitude = 0.5f,
+
+        .harmonics = 
+        {
+            .amplitude = {1.0f, -10.0f, 5.4f, 2.3f},
+            .count = 4
+        },
+        
+        .oscillator =
+        {
+            .phase = 0.0f,
+        }
+    };
+
 
     VibrationStatus status =
-        vibration_fixed(&config, 1, &value);
+        vibration_init(&generator, &config);
 
     if (status != VIBRATION_NYQUIST_VIOLATION)
     {
@@ -112,46 +164,69 @@ static int test_nyquist_violation(void)
 
 static int test_invalid_harmonic_count(void)
 {
-    struct VibrationConfig config =
+    struct SignalConfig config =
     {
-        .rpm = 1200,
-        .amplitude = 0.5,
-        .sample_rate = 2000,
-        .harmonic_count = 0,
-        .harmonics_enabled = true,
+        .sample_rate = 1200.0f
     };
 
-    int16_t value;
+    struct VibrationGenerator generator =
+    {
+        .rpm = 1000.0f,
+        .amplitude = 0.5f,
+
+        .harmonics = 
+        {
+            .amplitude = {1.0f, -10.0f, 5.4f, 2.3f},
+            .count = MAX_HARMONICS+1
+        },
+        
+        .oscillator =
+        {
+            .phase = 0.0f,
+        }
+    };
 
     VibrationStatus status =
-        vibration_fixed(&config, 1, &value);
+        vibration_init(&generator, &config);
 
-    if (status != VIBRATION_INVALID_HARMONIC_COUNT)
+    if (status != VIBRATION_HARMONICS_CLAMPED)
     {
-        printf("FAIL: invalid harmonic count\n");
+        printf("FAIL: %d \n", status);
         return 1;
     }
 
-    printf("PASS: invalid harmonic count\n");
+    printf("PASS: Harmonics Clamped\n");
     return 0;
 }
 
 
 static int test_harmonics_disabled(void)
 {
-    struct VibrationConfig config =
+    struct SignalConfig config =
     {
-        .rpm = 1200,
-        .amplitude = 0.5,
-        .sample_rate = 2000,
-        .harmonic_count = 4,
-        .harmonics_enabled = false,
+        .sample_rate = 1000.0f
     };
 
-    int16_t value;
+    struct VibrationGenerator generator =
+    {
+        .rpm = 1200.0f,
+        .amplitude = 0.5f,
+
+        .harmonics = 
+        {
+            .amplitude = {},
+            .count = 0
+        },
+        
+        .oscillator =
+        {
+            .phase = 0.0f,
+        }
+    };
+
 
     VibrationStatus status =
-        vibration_fixed(&config, 1, &value);
+        vibration_init(&generator, &config);
 
     if (status != VIBRATION_OK)
     {

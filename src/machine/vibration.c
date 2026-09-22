@@ -32,7 +32,7 @@ VibrationStatus vibration_init(
 
     oscillator_init(&generator->oscillator, frequency, config->sample_rate);
 
-    return VIBRATION_OK;
+    return status;
 }
 
 

@@ -2,8 +2,17 @@
 #define COMMON_H
 
 
+
 #define PI 3.14159265358979323846f
 #define MAX_HARMONICS 16
+
+#include <stdint.h>
+
+struct HarmonicProfile
+{
+    float amplitude[MAX_HARMONICS];
+    uint8_t count;
+};
 
 typedef enum
 {
@@ -30,12 +39,6 @@ SignalValidationStatus validate_harmonics(
     float sample_rate,
     struct HarmonicProfile *harmonics
 );
-
-struct HarmonicProfile
-{
-    float amplitude[MAX_HARMONICS];
-    uint8_t count;
-};
 
 
 struct SignalConfig
