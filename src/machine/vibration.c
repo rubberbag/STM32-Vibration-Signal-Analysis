@@ -98,7 +98,7 @@ float vibration(struct VibrationGenerator *generator)
     
     if (count > HARDWARE_CEILING_HARMONICS) return 0.0f;
 
-    if (count > 0.0f)
+    if (count > 0)
     {
         for (int i = 0; i < generator->harmonics.count; i++)
         {

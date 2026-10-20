@@ -48,18 +48,27 @@ SignalValidationStatus validate_harmonics(
         
         return SIGNAL_INVALID_PARAMETER;
 
-    SignalValidationStatus status = SIGNAL_VALID;
+
+    if (harmonics->count > 0)
+    {
+        float requested_max_frequency =
+            frequency * (float)harmonics->count;
+
+        if (requested_max_frequency > nyquist_hz)
+            return SIGNAL_NYQUIST_VIOLATION;
+    }
 
     
     uint32_t physical_max_harmonics = (uint32_t)(max_bandwidth_hz/frequency);
     uint32_t safe_hardware_ceiling = physical_max_harmonics;
 
-    if(safe_hardware_ceiling > HARDWARE_CEILING_HARMONICS) safe_hardware_ceiling = HARDWARE_CEILING_HARMONICS;
+    if(safe_hardware_ceiling > HARDWARE_CEILING_HARMONICS) 
+        safe_hardware_ceiling = HARDWARE_CEILING_HARMONICS;
 
     /*
-     * Don't block the caller.
      * Clamp excessive harmonic count.
      */
+    SignalValidationStatus status = SIGNAL_VALID;
 
     if (harmonics->count > safe_hardware_ceiling)
     {
