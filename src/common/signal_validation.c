@@ -37,15 +37,29 @@ SignalValidationStatus validate_harmonics(
 
     SignalValidationStatus status = SIGNAL_VALID;
 
+    float max_bandwidth_hz = sample_rate/ISO_GUARDBAND;
+    
+    uint32_t physical_max_harmonics = (uint32_t)(max_bandwidth_hz/frequency);
+
+    uint32_t safe_hardware_ceiling = physical_max_harmonics;
+
+    if(safe_hardware_ceiling> HARDWARE_CEILING_HARMONICS)
+    {
+        safe_hardware_ceiling = HARDWARE_CEILING_HARMONICS;
+    }
+
     /*
      * Don't block the caller.
      * Clamp excessive harmonic count.
      */
-    if (harmonics->count > MAX_HARMONICS)
+    
+    if (harmonics->count > safe_hardware_ceiling)
     {
-        harmonics->count = MAX_HARMONICS;
+        harmonics->count = safe_hardware_ceiling;
         status = SIGNAL_HARMONICS_CLAMPED;
     }
+
+    
 
     /*
      * No harmonics to validate.

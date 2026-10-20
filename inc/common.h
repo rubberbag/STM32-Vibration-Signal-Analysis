@@ -4,13 +4,14 @@
 
 
 #define PI 3.14159265358979323846f
-#define MAX_HARMONICS 16
+#define HARDWARE_CEILING_HARMONICS 64
+#define ISO_GUARDBAND 2.56f
 
 #include <stdint.h>
 
 struct HarmonicProfile
 {
-    float amplitude[MAX_HARMONICS];
+    float amplitude[HARDWARE_CEILING_HARMONICS];
     uint8_t count;
 };
 
