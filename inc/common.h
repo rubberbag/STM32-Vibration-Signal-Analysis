@@ -1,13 +1,13 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-
+#include <stdint.h>
 
 #define PI 3.14159265358979323846f
-#define HARDWARE_CEILING_HARMONICS 64
 #define ISO_GUARDBAND 2.56f
+#define HARDWARE_CEILING_HARMONICS 64
+#define HARDWARE_MOTOR_LIMIT_RPM 15000.0f
 
-#include <stdint.h>
 
 struct HarmonicProfile
 {
@@ -22,6 +22,7 @@ typedef enum
     SIGNAL_INVALID_SAMPLE_RATE,
     SIGNAL_INVALID_FREQUENCY,
     SIGNAL_NYQUIST_VIOLATION,
+    SIGNAL_GUARDBAND_VIOLATION,
     SIGNAL_HARMONICS_CLAMPED
 } SignalValidationStatus;
 
@@ -37,7 +38,8 @@ SignalValidationStatus validate_frequency(
 
 SignalValidationStatus validate_harmonics(
     float frequency,
-    float sample_rate,
+    float max_bandwidth_hz,
+    float nyquist_hz,
     struct HarmonicProfile *harmonics
 );
 
