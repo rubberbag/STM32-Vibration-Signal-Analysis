@@ -177,7 +177,7 @@ static int test_invalid_harmonic_count(void)
         .harmonics = 
         {
             .amplitude = {1.0f, -10.0f, 5.4f, 2.3f},
-            .count = MAX_HARMONICS+1
+            .count = HARDWARE_CEILING_HARMONICS+1
         },
         
         .oscillator =
