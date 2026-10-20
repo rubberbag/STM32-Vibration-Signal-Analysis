@@ -171,7 +171,7 @@ static int test_invalid_harmonic_count(void)
 
     struct VibrationGenerator generator =
     {
-        .rpm = 1000.0f,
+        .rpm = 500.0f,
         .amplitude = 0.5f,
 
         .harmonics = 
