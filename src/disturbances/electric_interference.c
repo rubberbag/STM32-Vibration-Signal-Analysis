@@ -46,7 +46,7 @@ static ElectricStatus electric_interference_validate(
 
     if (generator->frequency <= 0)
         return ELECTRICAL_INVALID_FREQUENCY;
-        
+
     
     float nyquist_hz = config->sample_rate / 2.0f;
     float max_bandwidth_hz = config->sample_rate/ISO_GUARDBAND;
@@ -86,20 +86,21 @@ static ElectricStatus electric_interference_validate(
 
 float electric_interference(struct ElectricGenerator *generator)
 {
-    float value = 0.0f;
+    if (generator == NULL)
+    {
+        return 0.0f;
+    }
 
-    if (generator->harmonics.count > 0)
+    float value = generator->amplitude * sinf(generator->oscillator.phase);
+    uint8_t count = (uint8_t) generator->harmonics.count;
+
+    if (count > 0)
     {
         for (int i = 0; i < generator->harmonics.count; i++)
         {
             value += generator->harmonics.amplitude[i] *
                      sinf(generator->oscillator.phase * (i + 1));
         }
-    }
-    else
-    {
-        value = generator->amplitude *
-                sinf(generator->oscillator.phase);
     }
 
     oscillator_next(&generator->oscillator);
