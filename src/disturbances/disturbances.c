@@ -10,15 +10,6 @@ DisturbanceStatus disturbance_init(struct DisturbanceGenerator *generator)
         return DISTURBANCE_INVALID_ARGUMENT;
     }
 
-    // Do NOT wipe the struct with memset here!
-    // This allows your main loop to directly initialize parameter configurations 
-    // (like target SNR, grid frequencies, or drift intensity sigmas)
-    
-    // Set your active simulation bypass flags to default baseline off states
-    generator->noise_enabled      = false;
-    generator->drift_enabled      = false;
-    generator->electrical_enabled = false;
-
     return DISTURBANCE_OK;
 }
 
