@@ -5,18 +5,6 @@ FaultStatus fault_init(struct FaultGenerator *fault)
 {
     if (fault == NULL) return FAULT_INVALID_PARAM;
 
-    // stable baseline Imbalance defaults
-    fault->imbalance_cfg.severity = 0.25f;    
-
-    // stable baseline Looseness defaults
-    fault->looseness_cfg.threshold = 0.80f;  
-
-    // highly realistic fractional asynchronous Bearing defect defaults
-    fault->bearing_cfg.fault_frequency_multiplier = 3.58f; // Example: Ball Pass Frequency Outer (BPFO)
-    fault->bearing_cfg.impact_amplitude            = 0.35f;
-    fault->bearing_cfg.decay_rate                  = 6.5f;
-    fault->bearing_cfg.current_impact_phase        = 0.0f;
-
     return FAULT_OK;
 }
 
