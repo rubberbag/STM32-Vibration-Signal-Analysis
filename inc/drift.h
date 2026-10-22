@@ -1,6 +1,8 @@
 #ifndef DRIFT_H
 #define DRIFT_H
 
+#include "common.h"
+
 struct DriftGenerator
 {
     float sigma;
