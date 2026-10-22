@@ -1,6 +1,7 @@
 #ifndef DISTURBANCE_H
 #define DISTURBANCE_H
 
+#include <stddef.h>
 #include <stdbool.h>
 
 #include  "noise.h"
@@ -12,6 +13,14 @@ typedef enum
     DISTURBANCE_OK = 0,
     DISTURBANCE_INVALID_ARGUMENT,
 } DisturbanceStatus;
+
+typedef enum { 
+    DISTURBANCE_NONE = 0, 
+    DISTURBANCE_ELECTRICAL, 
+    DISTURBANCE_NOISE, 
+    DISTURBANCE_DRIFT, 
+    DISTURBANCE_ALL 
+} ActiveDisturbanceMode;
 
 struct DisturbanceGenerator
 {
