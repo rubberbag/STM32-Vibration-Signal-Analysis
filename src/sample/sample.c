@@ -8,7 +8,6 @@ SampleStatus sample_generator_init(struct SampleGenerator *sample, const struct 
         return SAMPLE_STATUS_INVALID_ARGUMENT;
     }
     
-    memset(sample, 0, sizeof(struct SampleGenerator));
 
     // Initialize core motor engine and trap hardware limitations immediately
     VibrationStatus vib_status = vibration_init(&sample->vibration, config);
