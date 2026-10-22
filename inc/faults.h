@@ -1,23 +1,36 @@
-#ifndef FAULT_H
-#define FAULT_H
+#ifndef FAULTS_H
+#define FAULTS_H
 
-#include <stdbool.h>
+#include <stdint.h>
+#include "imbalance.h"
+#include "looseness.h"
+#include "bearing.h"
 
-typedef enum
-{
+typedef enum {
     FAULT_OK = 0,
-    FAULT_INVALID_ARGUMENT,
+    FAULT_INVALID_PARAM
 } FaultStatus;
 
-struct FaultGenerator
-{
-    /* fault parameters */
+typedef enum {
+    FAULT_MODE_NONE = 0,
+    FAULT_MODE_IMBALANCE,
+    FAULT_MODE_LOOSENESS,
+    FAULT_MODE_BEARING,
+    FAULT_MODE_ALL
+} ActiveFaultMode;
+
+
+struct FaultGenerator {
+    struct ImbalanceConfig imbalance_cfg;
+    struct LoosenessConfig looseness_cfg;
+    struct BearingConfig   bearing_cfg;
 };
 
-FaultStatus fault_init(
-    struct FaultGenerator *generator);
+FaultStatus fault_init(struct FaultGenerator *fault);
 
-float fault_generate(
-    struct FaultGenerator *generator);
+// Clean mathematical routing wrappers called by sample_execute_tick
+float fault_imbalance(const struct FaultGenerator *fault, float signal);
+float fault_looseness(const struct FaultGenerator *fault, float signal);
+float fault_bearing(struct FaultGenerator *fault, float signal, float current_phase);
 
 #endif
