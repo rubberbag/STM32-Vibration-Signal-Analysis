@@ -11,6 +11,10 @@
  */
 void uart_init();
 
+
+void USART1_SendChar(char c);
+void USART1_SendString(const char *str);
+
 /**
  * Sends a single raw character byte over the physical transmission pin.
  */
