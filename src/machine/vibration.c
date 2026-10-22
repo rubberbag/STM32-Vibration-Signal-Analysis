@@ -92,7 +92,7 @@ float vibration(struct VibrationGenerator *generator)
 
     if (generator==NULL) return 0.0f;
 
-    float value  = 0.0f;
+    float value  = generator->amplitude * sinf(generator->oscillator.phase);
     
     uint8_t count = generator->harmonics.count;
     
@@ -106,8 +106,7 @@ float vibration(struct VibrationGenerator *generator)
                      sinf(generator->oscillator.phase * (i + 1));
         }
     }
-    else 
-        value += generator->amplitude * sinf(generator->oscillator.phase);
+
 
     oscillator_next(&generator->oscillator);
 
