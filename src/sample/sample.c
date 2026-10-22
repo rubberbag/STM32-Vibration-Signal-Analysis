@@ -44,7 +44,7 @@ bool sample_execute_tick(struct SampleGenerator *sample)
     // Core Vibration Engine Wave Generation
     float signal = vibration(&sample->vibration);
 
-    // Phase 2: Cascading Inline Fault Modification 
+    // Cascading Inline Fault Modification 
     // Inside sample_execute_tick:
     if (sample->fault_mode != FAULT_MODE_NONE) {
         if (sample->fault_mode == FAULT_MODE_IMBALANCE || sample->fault_mode == FAULT_MODE_ALL) {
