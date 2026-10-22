@@ -46,6 +46,10 @@ static ElectricStatus electric_interference_validate(
 
     if (generator->frequency <= 0)
         return ELECTRICAL_INVALID_FREQUENCY;
+        
+    
+    float nyquist_hz = config->sample_rate / 2.0f;
+    float max_bandwidth_hz = config->sample_rate/ISO_GUARDBAND;
 
     SignalValidationStatus status;
 
@@ -64,7 +68,8 @@ static ElectricStatus electric_interference_validate(
 
     status = validate_harmonics(
         generator->frequency,
-        config->sample_rate,
+        max_bandwidth_hz,
+        nyquist_hz,
         &generator->harmonics
     );
 
