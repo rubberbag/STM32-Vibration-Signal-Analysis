@@ -3,9 +3,6 @@
 #include <stddef.h>
 
 #include "noise.h"
-#include "vibration.h"
-#include "common.h"
-
 
 #define MEAN           0.0f
 
@@ -58,7 +55,7 @@ static NoiseStatus noise_validation(
 
 
 /* Calculate noise power and Gaussian standard deviation. */
-static NoiseStatus NoisePowerInit(
+NoiseStatus NoisePowerInit(
     struct VibrationGenerator *generator,
     struct NoiseGenerator *noise)
 {

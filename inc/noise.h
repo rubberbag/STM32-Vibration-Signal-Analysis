@@ -1,6 +1,9 @@
 #ifndef NOISE_H
 #define NOISE_H
 
+#include "vibration.h"
+#include "common.h"
+
 struct NoiseGenerator
 {
     float snr_db;
@@ -17,7 +20,12 @@ typedef enum
 
 } NoiseStatus;
 
-void RNG_Init(void);
+
+
+NoiseStatus NoisePowerInit(
+    struct VibrationGenerator *generator,
+    struct NoiseGenerator *noise);
+
 float generate_noise(const struct NoiseGenerator *noise);
 
 #endif
