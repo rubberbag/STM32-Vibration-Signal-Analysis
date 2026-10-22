@@ -50,6 +50,22 @@ void uart_init(void)
     USART1_Config();
 }
 
+void USART1_SendChar(char c)
+{
+    while(!(USART1->SR & USART_SR_TXE));
+    USART1->DR = c;
+}
+
+void USART1_SendString(const char *str)
+{
+    while(*str)
+    {
+        USART1_SendChar(*str);
+        str++;
+    }
+    while(!(USART1->SR & USART_SR_TC));
+}
+
 void uart_send_byte(uint8_t byte)
 {
     // Wait until the Transmit Data Register is empty (TXE flag goes high)
