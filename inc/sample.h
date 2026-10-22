@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include "vibration.h"
 #include "faults.h"
-#include "disturbaces.h"
+#include "disturbances.h"
 
 // The block size configuration is declared here as it owns the ping-pong footprint
 #define BUFFER_BLOCK_SIZE 512
@@ -15,30 +15,16 @@ typedef enum {
     SAMPLE_STATUS_OK = 0,
     SAMPLE_STATUS_INVALID_ARGUMENT,
     SAMPLE_STATUS_VIBRATION_ERROR,
+    SAMPLE_STATUS_DISTURBANCE_ERROR
 } SampleStatus;
 
-typedef enum { 
-    FAULT_NONE = 0, 
-    FAULT_IMBALANCE, 
-    FAULT_LOOSENESS, 
-    FAULT_BOTH 
-} ActiveFaultMode;
-
-typedef enum { 
-    DISTURBANCE_NONE = 0, 
-    DISTURBANCE_ELECTRICAL, 
-    DISTURBANCE_NOISE, 
-    DISTURBANCE_DRIFT, 
-    DISTURBANCE_ALL 
-} ActiveDisturbanceMode;
 
 struct SampleGenerator {
     struct VibrationGenerator vibration;
     struct FaultGenerator fault;
     struct DisturbanceGenerator disturbance;
 
-    // Simulation selector configurations
-    ActiveFaultMode fault_mode;
+    ActiveFaultMode fault_mode; 
     ActiveDisturbanceMode disturbance_mode;
 
     // Native FPU precision data storage paths
@@ -65,6 +51,6 @@ bool sample_execute_tick(struct SampleGenerator *sample);
 /**
  * Clean data accessor. Returns the read-only pointer to the static full buffer block.
  */
-const float* sample_get_time_domain(const struct SampleGenerator *sample, size_t *out_length);
+const float* sample_get_time_domain(const struct SampleGenerator *sample);
 
 #endif

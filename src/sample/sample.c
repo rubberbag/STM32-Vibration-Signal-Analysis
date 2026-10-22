@@ -20,8 +20,13 @@ SampleStatus sample_generator_init(struct SampleGenerator *sample, const struct 
     fault_init(&sample->fault);
     disturbance_init(&sample->disturbance);
 
+    if (NoisePowerInit(&sample->vibration, &sample->disturbance.noise) != NOISE_OK) {
+        return SAMPLE_STATUS_DISTURBANCE_ERROR; 
+    }
+
+
     // Set initial system baseline states
-    sample->fault_mode = FAULT_NONE;
+    sample->fault_mode = FAULT_MODE_NONE;
     sample->disturbance_mode = DISTURBANCE_NONE;
     sample->write_index = 0;
     sample->use_buffer_b = false;
@@ -36,37 +41,34 @@ bool sample_execute_tick(struct SampleGenerator *sample)
         return false;
     }
 
-    // Phase 1: Core Vibration Engine Wave Generation
+    // Core Vibration Engine Wave Generation
     float signal = vibration(&sample->vibration);
 
     // Phase 2: Cascading Inline Fault Modification 
-    if (sample->fault_mode != FAULT_NONE) {
-        if (sample->fault_mode == FAULT_IMBALANCE || sample->fault_mode == FAULT_BOTH) {
+    // Inside sample_execute_tick:
+    if (sample->fault_mode != FAULT_MODE_NONE) {
+        if (sample->fault_mode == FAULT_MODE_IMBALANCE || sample->fault_mode == FAULT_MODE_ALL) {
             signal = fault_imbalance(&sample->fault, signal);
         }
-        if (sample->fault_mode == FAULT_LOOSENESS || sample->fault_mode == FAULT_BOTH) {
+        if (sample->fault_mode == FAULT_MODE_LOOSENESS || sample->fault_mode == FAULT_MODE_ALL) {
             signal = fault_looseness(&sample->fault, signal);
         }
+        if (sample->fault_mode == FAULT_MODE_BEARING || sample->fault_mode == FAULT_MODE_ALL) {
+            signal = fault_bearing(&sample->fault, signal, sample->vibration.oscillator.phase);
+        }
     }
 
-    // Phase 3: Additive Noise/Disturbance Injections
+
+    // Additive Disturbance Injections
     if (sample->disturbance_mode != DISTURBANCE_NONE) {
-        if (sample->disturbance_mode == DISTURBANCE_ELECTRICAL || sample->disturbance_mode == DISTURBANCE_ALL) {
-            signal += disturbance_electrical(&sample->disturbance);
-        }
-        if (sample->disturbance_mode == DISTURBANCE_NOISE || sample->disturbance_mode == DISTURBANCE_ALL) {
-            signal += disturbance_noise(&sample->disturbance);
-        }
-        if (sample->disturbance_mode == DISTURBANCE_DRIFT || sample->disturbance_mode == DISTURBANCE_ALL) {
-            signal += disturbance_drift(&sample->disturbance);
-        }
+       signal += disturbance_generate(&sample->disturbance);
     }
 
-    // Phase 4: Route signal output straight into the active memory channel
+    // Route signal output straight into the active memory channel
     float *active_buffer = sample->use_buffer_b ? sample->buffer_b : sample->buffer_a;
     active_buffer[sample->write_index++] = signal;
 
-    // Phase 5: Ping-Pong Window Swap Boundary Logic
+    // Ping-Pong Window Swap Boundary Logic
     if (sample->write_index >= BUFFER_BLOCK_SIZE) {
         // Instantly switch active buffer targets to preserve continuous hardware collection cycles
         sample->use_buffer_b = !sample->use_buffer_b;
@@ -81,14 +83,11 @@ bool sample_execute_tick(struct SampleGenerator *sample)
     return false;
 }
 
-const float* sample_get_time_domain(const struct SampleGenerator *sample, size_t *out_length)
+const float* sample_get_time_domain(const struct SampleGenerator *sample)
 {
-    if (sample == NULL || out_length == NULL) {
+    if (sample == NULL) {
         return NULL;
     }
-    
-    // Pass the length back out to main dynamically
-    *out_length = BUFFER_BLOCK_SIZE; 
     
     // Return the clean data pointer
     return sample->last_completed_buffer;
