@@ -2,10 +2,8 @@
 #include <stddef.h>
 #include <math.h>
 
-// System & Core MCU Target Headers (Parsed from your Include paths)
 #include "stm32f4xx.h"
 
-// Project Sub-Module Domain Headers (Parsed directly from your inc/ folder)
 #include "common.h"
 #include "sample.h"
 #include "dsp.h"
