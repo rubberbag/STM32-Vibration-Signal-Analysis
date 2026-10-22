@@ -14,7 +14,7 @@
 */
 DriftStatus drift_init(struct DriftGenerator *drift, const float sigma, struct SignalConfig *config )
 {
-    if(drift == NULL || config || !isfinite(sigma) || sigma <= 0.0f) return DRIFT_INVALID_PARAMETERS;
+    if(drift == NULL || config == NULL || !isfinite(sigma) || sigma <= 0.0f) return DRIFT_INVALID_PARAMETERS;
 
     drift->sigma = sigma;
     drift->value = 0.0f;
