@@ -29,13 +29,25 @@ static void generate_hanning_window_lut(float *lut, size_t length)
 
 int main(void)
 {
+    uart_init(); 
+
+    USART1_SendString("--- DIGITAL SIGNAL PROCESSING ---\r\n");
+
+    SCB->CPACR |= ((3UL << 10*2) | (3UL << 11*2));
+    __DSB(); 
+    __ISB(); 
+
+    USART1_SendString("--- SCB->CPACR Enabled ---\r\n");
+
     // Initialize our optimized Hanning multiplication window at system boot
     generate_hanning_window_lut(hanning_lookup_table, SAMPLE_BLOCK_SIZE);
 
+    USART1_SendString("--- Generated Multipliers ---\r\n");
     // Boot system UART peripheral block directly using your register configuration variables
     // Target APB2 Peripheral clock frequency runs at 84MHz when System Core runs at 168MHz
-    uart_init(); 
+   
     RNG_Init();
+    USART1_SendString("--- RNG INITIALIZED ---\r\n");
 
     //  FIRMWARE APPLICATION TUNING COEFFICIENTS (EASY PARAMETER SWAPPING)
 
@@ -70,10 +82,13 @@ int main(void)
     ActiveFaultMode chosen_fault_mode      = FAULT_MODE_ALL;
     ActiveDisturbanceMode chosen_disturbance_mode     = DISTURBANCE_ALL;
 
+    USART1_SendString("--- CONFIG VALUES ASSIGNED ---\r\n");
  
     struct SignalConfig config = {
         .sample_rate = system_sample_rate
     };
+
+    USART1_SendString("---Signal CONFIG VALUES ASSIGNED ---\r\n");
 
     struct SampleGenerator sampler = {
         // Core Vibration Parameters
@@ -133,7 +148,7 @@ int main(void)
         .last_completed_buffer = NULL
     };
 
-  
+    USART1_SendString("---Sample Generator VALUES ASSIGNED ---\r\n");
 
     struct DiagnosticPacket uart_packet;
     uint32_t dynamic_tracking_packet_id = start_packet_id;
@@ -142,9 +157,13 @@ int main(void)
 
     // Validate system parameters and pass config down across internal components safely
     if (sample_generator_init(&sampler, &config) != SAMPLE_STATUS_OK) {
-        while(1); // Trap safety lock if hardware definitions fail validation
+        USART1_SendString("\r\nCRITICAL ERROR: sample_gensample_generator_init failed validation routines!\r\n");
+        while(1);
+        
+        // Trap safety lock if hardware definitions fail validation
     }
 
+    USART1_SendString("--- [SUCCESS] Generator Initialized! Starting Poll Loop ---\r\n");
  
     while (1) {
         // Process a single high-speed sensor step update
@@ -152,12 +171,17 @@ int main(void)
 
         if (buffer_is_complete) {
             // Pull the un-mutated read-only data block pointer directly out of the sampler
+            USART1_SendString("--- Buffer is Complete ---\r\n");
             const float *raw_time_data = sample_get_time_domain(&sampler);
+            USART1_SendString("--- Received Time Domain data ---\r\n");
 
             if (raw_time_data != NULL) {
                 
                 // xecute math pipelines natively onto separate local workspace arrays
+                USART1_SendString("--- Applying Hanning Window ---\r\n");
                 dsp_apply_hanning(raw_time_data, hanning_lookup_table, workspace_windowed, SAMPLE_BLOCK_SIZE);
+
+                USART1_SendString("--- Computing Fast Fourier Transform ---\r\n");
                 dsp_compute_fft(workspace_windowed, workspace_fft, SAMPLE_BLOCK_SIZE);
 
                 // Assign structural telemetry tracking metadata fields natively using dot syntax
@@ -167,9 +191,12 @@ int main(void)
                 uart_packet.scaling_factor  = system_scale_factor;
 
                 // Quantize both streams into fixed point integers to minimize wire footprints
+                USART1_SendString("--- Building Packets ---\r\n");
                 packet_build(&uart_packet, raw_time_data, workspace_fft, SAMPLE_BLOCK_SIZE);
 
                 // Direct serial dispatch of the packed payload byte-by-byte over the wire
+                USART1_SendString("--- Transmitting Packets ---\r\n");
+
                 uart_transmit_packet(&uart_packet);
             }
         }
