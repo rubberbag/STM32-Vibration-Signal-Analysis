@@ -49,7 +49,7 @@ int main(void)
 
     //  FIRMWARE APPLICATION TUNING COEFFICIENTS (EASY PARAMETER SWAPPING)
 
-    float system_sample_rate   = 1000.0f;  // Core sampling frame speed frequency
+    float system_sample_rate   = 16000.0f;  // Core sampling frame speed frequency
     float system_scale_factor  = 1000.0f;  // Symmetrical 1000x fixed-point conversion scale
     uint32_t start_packet_id   = 0;        // Initial numeric block starting index marker
 
@@ -192,10 +192,15 @@ int main(void)
                 USART1_SendString("--- Building Packets ---\r\n");
                 packet_build(&uart_packet, raw_time_data, workspace_fft, SAMPLE_BLOCK_SIZE);
 
+                USART1_SendString("--- [Success] Packet Built ---\r\n");
+
                 // Direct serial dispatch of the packed payload byte-by-byte over the wire
                 USART1_SendString("--- Transmitting Packets ---\r\n");
 
                 uart_transmit_packet(&uart_packet);
+
+
+                USART1_SendString("---\r\n Packet Transmitted ---\r\n");
             }
         }
     }
