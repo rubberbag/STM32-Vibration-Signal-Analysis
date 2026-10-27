@@ -8,14 +8,15 @@
     This recording captures the bare-metal DSP pipeline (metadata, time-domain, and FFT magnitudes) executing in real time inside the Renode simulation framework.
 </p>
 
+## Synthetic Wave Generation, Windowing, and FFT
 
-## Synthetic Wave Generation, Windowing and FTT
-
-A high performance digital signal processing (dsp) pipeline optimized for resource-constrained microcontrollers. This respository implements real-time synthetic signal generations, Hanning windows application, and a Radix-2 Fast Fourier Transform (FFT) entirely on-chip.
-
+A high-performance digital signal processing (DSP) pipeline optimized for resource-constrained microcontrollers. This repository implements real-time synthetic signal generation, Hanning window application, and a Radix-2 Decimation-In-Time (DIT) Fast Fourier Transform (FFT) calculation block entirely on-chip.
 
 ## Table of Contents
 - [1. System Architecture & Signal Path](#system-architecture--signal-path)
+  - [Project Overview](#project-overview)
+  - [Signal Processing Core](#signal-processing-core)
+  - [Telemetry \& Emulation Pipeline](#telemetry---emulation-pipeline)
 - [2. Technical Specifications](#technical-specifications)
 - [3. DSP Theory & Implementation](#dsp-theory--implementation)
   - [Signal Generation](#signal-generation)
@@ -58,6 +59,16 @@ E --> G
 G --> H[Uart TX]
 
 ```
+
+### Project Overview
+This repository contains a real-time, bare-metal vibration analysis firmware application developed for the ARM Cortex-M4 (STM32F407 Discovery) platform. The system is engineered for deterministic, edge-compute environments, operating completely within static memory boundaries to guarantee predictable processing timelines.
+
+### Signal Processing Core
+The firmware dynamically evaluates simulated mechanical defects including unbalance, structural looseness, and bearing outer-race degradation. Time-domain samples are stabilized element-wise via a pre-computed Hanning window windowing array before being transformed into the frequency domain via an optimized in-place Radix-2 Decimation-In-Time (DIT) FFT engine.
+
+### Telemetry & Emulation Pipeline
+Processed frequency bins and core metadata are packed into structured, low-overhead binary telemetry frames and streamed continuously via raw register-level UART blocks at 115,200 baud. The complete hardware stack is emulated and benchmarked headlessly inside the Renode framework, providing an instruction-level execution profile for performance validation.
+
 
 ## Technical Specifications
 
