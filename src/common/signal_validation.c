@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <math.h>
 
-/**
+/*
  * Validate the raw sample rate entry.
  */
 
@@ -14,7 +14,7 @@ SignalValidationStatus validate_sample_rate(float sample_rate)
     return SIGNAL_VALID;
 }
 
-/**
+/*
  * validate a standlone target frequency interest boundary
  */
 SignalValidationStatus validate_frequency(
@@ -82,9 +82,9 @@ SignalValidationStatus validate_harmonics(
     if (harmonics->count > 0)
     {
         /*
-        * Highest harmonic frequency:
-        *
-        * f_max = fundamental × harmonic number
+         * Highest harmonic frequency:
+         *
+         * f_max = fundamental × harmonic number
         */
         float max_frequency = frequency * (float)harmonics->count;
         
