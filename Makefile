@@ -19,13 +19,13 @@ DEFINES = -DSTM32F407xx
 INCLUDES = \
 -Iinc \
 -IDevice/Include \
--IDrivers/CMSIS/Core/Include \
+-IDrivers/CMSIS/Core/Include 
 
 # compiler flags
 CFLAGS = $(CPU)
 CFLAGS += $(THUMB)
 CFLAGS += $(FPU)   
-CFLAGS += -O0
+CFLAGS += -O2            
 CFLAGS += -g
 CFLAGS += -Wall
 CFLAGS += $(DEFINES)
@@ -43,10 +43,9 @@ ASMS = Device/Source/startup_stm32f407xx.s
 # build directory
 OBJ_DIR = build
 
-# object files
-
-OBJS = $(SRCS:%=$(OBJ_DIR)/%.o)
-OBJS += $(ASMS:%=$(OBJ_DIR)/%.o)
+# Maps files safely under the build directory
+OBJS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))
+OBJS += $(patsubst %.s, $(OBJ_DIR)/%.o, $(ASMS))
 
 # linker script
 LDSCRIPT = Linker/STM32F407VGTX_FLASH.ld
@@ -67,22 +66,19 @@ HEX = $(OBJ_DIR)/$(TARGET).hex
 # default
 all: $(ELF) $(BIN) $(HEX)
 
-# create build directories
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
-
-# compile C files
-$(OBJ_DIR)/%.c.o: %.c
-	mkdir -p $(dir $@)
+# compile C files (Fixed pattern rule)
+$(OBJ_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# compile assembly
-$(OBJ_DIR)/%.s.o: %.s
-	mkdir -p $(dir $@)
+# compile assembly (Fixed pattern rule)
+$(OBJ_DIR)/%.o: %.s
+	@mkdir -p $(dir $@)
 	$(AS) $(CFLAGS) -c $< -o $@
 
 # link
 $(ELF): $(OBJS)
+	@mkdir -p $(dir $@)
 	$(CC) $(OBJS) $(LDFLAGS) -o $@
 	$(SIZE) $@
 
@@ -95,7 +91,7 @@ $(HEX): $(ELF)
 	$(OBJCOPY) -O ihex $< $@
 
 # renode simulation launch
-run:
+run: $(ELF)
 	renode renode/run.resc
 	
 # clean workspace
