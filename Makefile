@@ -92,7 +92,8 @@ $(HEX): $(ELF)
 
 # renode simulation launch
 run: $(ELF)
-	renode renode/run.resc
+	renode --console --disable-xwt -e "i \$$CWD/renode/run.resc"
+
 	
 # clean workspace
 clean:
