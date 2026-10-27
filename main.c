@@ -49,7 +49,7 @@ int main(void)
 
     //  FIRMWARE APPLICATION TUNING COEFFICIENTS (EASY PARAMETER SWAPPING)
 
-    float system_sample_rate   = 16000.0f;  // Core sampling frame speed frequency
+    float system_sample_rate   = 1600.0f;  // Core sampling frame speed frequency
     float system_scale_factor  = 1000.0f;  // Symmetrical 1000x fixed-point conversion scale
     uint32_t start_packet_id   = 0;        // Initial numeric block starting index marker
 
