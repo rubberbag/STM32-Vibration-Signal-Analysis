@@ -7,7 +7,7 @@
 
 
 
-/**
+/*
  * electric_interference_validate - Validate electric generatoruration
  * @generator: electric generator struture
  * @config: signal configuration
