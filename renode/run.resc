@@ -11,4 +11,9 @@ sysbus LoadELF @build/dsp.elf
 
 showAnalyzer sysbus.usart1
 
+pause
+
+sysbus.cpu EnableProfiler CollapsedStack "/home/shell/projects/STM32-Vibration-Signal-Analysis/build/fft_profile.txt" true
+
+
 start
