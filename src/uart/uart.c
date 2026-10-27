@@ -1,7 +1,7 @@
 #include "stm32f4xx.h"
 #include "uart.h"
 
-#define UART_BAUD 0x008B
+#define UART_BAUD 0x02D9
 
 static void USART1_Clock_Enable(void)
 {
@@ -34,7 +34,7 @@ static void USART1_Config(void)
 {
     USART1->CR1 = 0;
 
-    USART1->BRR = UART_BAUD; /* 16MHz / 0x008B = 115200 */
+    USART1->BRR = UART_BAUD; /* 84MHz / 0x008B = 115200 */
 
     USART1->CR1 |= USART_CR1_TE;
 
@@ -63,7 +63,6 @@ void USART1_SendString(const char *str)
         USART1_SendChar(*str);
         str++;
     }
-    while(!(USART1->SR & USART_SR_TC));
 }
 
 void uart_send_byte(uint8_t byte)
