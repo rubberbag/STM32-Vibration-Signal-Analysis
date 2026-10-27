@@ -4,10 +4,10 @@ include @scripts/single-node/stm32f4_discovery.resc
 
 sysbus LoadELF @build/dsp.elf
 
-emulation CreateServerSocketTerminal 1234 "uart_tcp" false
-connector Connect sysbus.usart1 uart_tcp
+# emulation CreateServerSocketTerminal 1234 "uart_tcp" false
+# connector Connect sysbus.usart1 uart_tcp
 
-machine StartGdbServer 3333
+# machine StartGdbServer 3333
 
 # showAnalyzer sysbus.usart1
 
