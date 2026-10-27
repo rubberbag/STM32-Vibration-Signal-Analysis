@@ -81,14 +81,14 @@ Processed frequency bins and core metadata are packed into structured, low-overh
 
 ### Signal  Generation
 
-Synthetic signals are generated  mathematically. Whilr the goal is to transition to look-Up Tables  (LUT) to minimize CPU cycles, the system currently relies on standard floating-point math functions for signal generation.
+Synthetic signals are generated  mathematically. While the goal is to transition to look-Up Tables  (LUT) to minimize CPU cycles, the system currently relies on standard floating-point math functions for signal generation.
 
 - **Target Frequencies:** 1 kHz fundamental with varibale harmonic injection.
 - **Amplitude:** Scaled to maximize the dynamic  range of the fixed-point format without triggering overflows
 
 ### Hanning Window
 
-To mitigate spectral leakage caused by finite-time windowinf, a Hanning window is applied element-wise to  the input vector before computing the FFT:
+To mitigate spectral leakage caused by finite-time windowing, a Hanning window is applied element-wise to  the input vector before computing the FFT:
 
 ```math
 w[n] = 0.5 * (1 - cos(2πn / (N-1)))
