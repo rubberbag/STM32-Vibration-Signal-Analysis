@@ -74,7 +74,7 @@ Processed frequency bins and core metadata are packed into structured, low-overh
 
 - **Sampling Frequency (fs):** 1.6 kHz
 - **FFT Block Size (N):** 512 points
-- **Frequency Resolution** (Δf): 31.24 Hz
+- **Frequency Resolution** (Δf): 3.124 Hz
 - **Arithmetic: Fixed-point** 32-bit Single-Precision Floating-Point core execution path; quantized down to dynamic 32-bit fixed-point (`int32_t`) exclusively for telemetry packet streaming.
 
 ##  DSP Theory & Implementation
